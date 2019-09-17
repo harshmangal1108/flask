@@ -11,5 +11,5 @@ app=Flask(__name__)
 def hello():
    return "Flask App"
 
-app.run=main
+app.run()
 ```

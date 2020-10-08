@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect,url_for,flash,abort,session
+from flask import Flask,render_template,request,redirect,url_for,flash,abort,session,jsonify
 import json
 import os.path
 from werkzeug.utils import secure_filename
@@ -63,3 +63,9 @@ def redirect_to_url(code):
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('no_page.html'),404
+
+## Route for API
+@app.route('/api')
+def session_api():
+    ## returning all the short code to json file format
+    return jsonify(list(session.keys()))

@@ -1,16 +1,15 @@
-from flask import Flask,render_template,request,redirect,url_for,flash,abort,session,jsonify
+from flask import Flask,render_template,request,redirect,url_for,flash,abort,session,jsonify, Blueprint
 import json
 import os.path
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
-# This allows us to securly send messgaes back and forth to the user so that they can't see this info
-app.secret_key='hajaljhaksxakusyxajxuaydcxka'
-@app.route("/")
+###blue print
+bp=Blueprint('urlshort',__name__)
+@bp.route("/")
 def home():
     return render_template("home.html",codes=session.keys())#name="Harsh" if to pass a variable from here to page
 
-@app.route('/your-url',methods=['GET','POST'])
+@bp.route('/your-url',methods=['GET','POST'])
 def your_url():
     # Check if method is POST then write other wise redirect it to Home page
     if request.method == 'POST':
@@ -25,14 +24,14 @@ def your_url():
         if request.form['code'] in urls.keys():
             # flash for flask a way to display message as you move on to new web pages
             flash('That short code is already been taken. Please enter some other.')
-            return redirect(url_for('home'))
+            return redirect(url_for('usrlshort.home'))
         # Check wheather URL or string
         if 'url' in request.form.keys():
             urls[request.form['code']] = {'url':request.form['url']}
         else:
             f = request.files['file']  ## from HTML (name)
             full_name=request.form['code']+ secure_filename(f.filename)
-            f.save('/home/harsh/Flask/url-shortner/static/user_files/'+full_name)
+            f.save('/home/harsh/Flask/url-shortner/urlshort/static/user_files/'+full_name)
             urls[request.form['code']] = {'file':full_name}        
         #urls[request.form['code']] = {'url':request.form['url']}
         
@@ -43,9 +42,9 @@ def your_url():
             session[request.form['code']] = True
         return render_template("your_url.html",code=request.form['code'])#,name="Harsh")
     else :
-        return redirect(url_for('home'))
+        return redirect(url_for('urlshort.home'))
 
-@app.route('/<string:code>')
+@bp.route('/<string:code>')
 ### entering shortened url and going to actual
 def redirect_to_url(code):
     if os.path.exists('urls.json'):
@@ -60,12 +59,12 @@ def redirect_to_url(code):
                     return redirect(url_for('static',filename='user_files/'+urls[code]['file']))
     return abort(404)
 ## If some enter garbage route
-@app.errorhandler(404)
+@bp.errorhandler(404)
 def page_not_found(error):
     return render_template('no_page.html'),404
 
 ## Route for API
-@app.route('/api')
+@bp.route('/api')
 def session_api():
     ## returning all the short code to json file format
-    return jsonify(list(session.keys()))
+    return jsonify(list(session.keys()))``

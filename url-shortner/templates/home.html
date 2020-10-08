@@ -1,4 +1,9 @@
-<h1>URL SHPRTENER</h1>
+<h1>URL SHORTENER</h1>
+
+{% for message in get_flashed_messages()%} <!--Its jinjas own way to make for loop -->
+<h2>{{message}}</h2>
+{% endfor%} <!--Loop end line-->
+
 <form action="your-url" method="POST">
     <label for="url">Website URL</label>
     <input  type="url" name="url" value="" required>
@@ -9,3 +14,28 @@
     <input type="submit" value="Shotern">
 
 </form>
+
+<!--File uploads from user-->
+<form action="your-url" method="POST" enctype="multipart/form-data"> <!--says that this form allows to file upload-->
+    <label for="url">File</label>
+    <input  type="file" name="file" value="" required>
+    <br>
+    <label for="code">Short Name</label>
+    <input type="text" name="code" value="" required>
+    <br>
+    <input type="submit" value="Shotern">
+
+</form>
+
+<!--Cookies data displaying here-->
+{%if codes%}
+<h2>Codes Previously Created</h2>
+<ol>
+    <!-- there may be list of values previously so for loop-->
+    {%for code in codes%}
+    <a href="{{url_for('redirect_to_url',code=code)}}">
+    <li>{{code}}</li>
+    </a>
+    {%endfor%}
+</ol>
+{%endif%}
